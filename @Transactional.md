@@ -58,7 +58,7 @@ Dirty Read 방지
 
 두 번 쿼리했을 때 일관성있는 결과를 보여준다.
 
-* SERIALIZABLE
+* #### SERIALIZABLE
 
 데이터의 일관성과 동시성을 위해 MVCC(Multi Version Concurrency Control)을 사용하지 않는다.
 
