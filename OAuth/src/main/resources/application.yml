@@ -1,0 +1,22 @@
+spring:
+  profiles:
+    include: oauth
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_NAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    show-sql: true
+    generate-ddl: false
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    hibernate:
+      ddl-auto: create
+    database: mysql
+    properties:
+      hibernate_format: true
+      show_sql: false
+    open-in-view: false
+
+logging.level.org.hibernate.sql: debug
