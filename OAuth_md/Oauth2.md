@@ -2,8 +2,13 @@
 
 Oauth 플랫폼 연동 방법 정리
 
+Oauth2 지원 플랫폼
+
 ### 1. Google
 ### 2. Kakao
+### 3. Naver
+### 4. Github
+### 5. FaceBook
 
 ## Google
 
