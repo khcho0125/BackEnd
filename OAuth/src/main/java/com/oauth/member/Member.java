@@ -35,9 +35,5 @@ public class Member extends BaseTimeEntity {
         this.name = name;
         return this;
     }
-
-    public String getAuthor() {
-        return this.Authority.getValue();
-    }
 }
 

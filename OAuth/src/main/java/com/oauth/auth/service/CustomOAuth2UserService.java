@@ -1,10 +1,10 @@
-package com.oauth.auth;
+package com.oauth.auth.service;
 
+import com.oauth.auth.OAuthAttributes;
 import com.oauth.member.Member;
 import com.oauth.member.MemberRepository;
 import com.oauth.member.SessionMember;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -14,7 +14,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
-import java.util.Collections;
 
 @RequiredArgsConstructor
 @Service
@@ -38,7 +37,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         httpSession.setAttribute("member", new SessionMember(member));
 
         return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority(member.getAuthor())),
+                member.getAuthority().getAuthor(),
                 attributes.getAttributes(),
                 attributes.getNameAttributeKey());
     }
@@ -47,7 +46,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         Member member = memberRepository.findByEmail(attributes.getEmail())
                 .map(e -> e.update(attributes.getName(), attributes.getPicture()))
                 .orElse(attributes.toEntity());
-
         return memberRepository.save(member);
     }
 }

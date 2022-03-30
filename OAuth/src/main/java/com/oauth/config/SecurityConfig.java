@@ -1,6 +1,6 @@
 package com.oauth.config;
 
-import com.oauth.auth.CustomOAuth2UserService;
+import com.oauth.auth.service.CustomOAuth2UserService;
 import com.oauth.member.Author;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;

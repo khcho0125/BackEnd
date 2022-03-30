@@ -1,6 +1,5 @@
 package com.oauth.member;
 
-import com.oauth.member.Member;
 import lombok.Getter;
 
 import java.io.Serializable;
