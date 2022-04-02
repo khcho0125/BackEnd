@@ -1,0 +1,113 @@
+package com.query.Service;
+
+import com.query.entity.member.*;
+import com.query.repository.MemberRepository;
+import com.querydsl.core.dml.UpdateClause;
+import com.querydsl.core.types.Expression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.jpa.impl.JPAUpdateClause;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static com.query.entity.member.QMember.member;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(rollbackFor = {Exception.class})
+public class MemberService {
+
+    private final JPAQueryFactory jpaQueryFactory;
+
+    private final MemberRepository memberRepository;
+
+    public Member saveMember(MemberDto memberDto) {
+        return memberRepository.save(Member.builder()
+                .email(memberDto.getEmail())
+                .money(memberDto.getMoney())
+                .name(memberDto.getName()).build());
+    }
+
+    @Transactional(readOnly = true)
+    public Member findMember(Long userid) {
+        return jpaQueryFactory
+                .selectFrom(member)
+                .where(member.id.eq(userid))
+                .fetchOne();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Member> findListMember() {
+        return jpaQueryFactory
+                .selectFrom(member)
+                .innerJoin(member.following)
+                .fetchJoin()
+//                .where(member.money.between(5000, 10000))
+                .fetch();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Member> searchMember(String str) {
+        return jpaQueryFactory.query()
+                .select(member)
+                .from(member)
+                .where(member.name.like("%" + str + "%"))
+                .fetch();
+    }
+
+    public void updateMember(MemberDto memberDto) {
+        UpdateClause<JPAUpdateClause> updateClause = jpaQueryFactory.update(member);
+
+        if(memberDto.getEmail() != null) {
+            updateClause.set(member.email, memberDto.getEmail());
+        }
+
+        if(memberDto.getName() != null) {
+            updateClause.set(member.name, memberDto.getName());
+        }
+
+        if(memberDto.getMoney() != null) {
+            updateClause.set(member.money, memberDto.getMoney());
+        }
+
+        updateClause.where(member.id.eq(memberDto.getId()))
+                .execute();
+    }
+
+    public void buyProduct(Long id, Long price) {
+        UpdateClause<JPAUpdateClause> updateClause = jpaQueryFactory.update(member)
+                .set(member.money, member.money.add(-price));
+        updateClause.where(member.id.eq(id))
+                .execute();
+
+    }
+
+    public void followMember(Long id, Long who) {
+        jpaQueryFactory.update(member)
+                .set(member.following, findMember(who))
+                .where(member.id.eq(id))
+                .execute();
+    }
+
+    @Transactional(readOnly = true)
+    public List<MemberVO> findListMemberV1() {
+        return jpaQueryFactory.query()
+                .select(new QMemberVO(member.name, member.email, member.id, member.money))
+                .from(member)
+                .fetch();
+    }
+
+    @Transactional(readOnly = true)
+    public List<MemberVO2> findListMemberV2() {
+        return jpaQueryFactory.query()
+                .select(new QMemberVO2(member.name, member.email, member.id, member.money, subQuery(member.following)))
+                .from(member)
+                .fetch();
+    }
+
+    private Expression<? extends MemberSub> subQuery(QMember m) {
+        return new QMemberSub(m.id, m.name, m.email, m.money);
+    }
+}
