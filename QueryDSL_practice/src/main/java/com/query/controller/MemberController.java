@@ -1,10 +1,10 @@
 package com.query.controller;
 
+import com.query.Service.MemberService;
 import com.query.entity.member.Member;
 import com.query.entity.member.MemberDto;
 import com.query.entity.member.MemberVO;
 import com.query.entity.member.MemberVO2;
-import com.query.Service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +18,7 @@ public class MemberController {
 
     @PostMapping("/save")
     public Member setMember(@RequestBody MemberDto memberDto) {
-        return memberService.saveMember(memberDto);
+        return memberService.create(memberDto);
     }
 
     @GetMapping("/find")
@@ -28,7 +28,7 @@ public class MemberController {
 
     @GetMapping("/list")
     public List<Member> getList() {
-        return memberService.findListMember();
+        return memberService.showMemberList();
     }
 
     @GetMapping("/search/{param}")
@@ -43,21 +43,21 @@ public class MemberController {
 
     @PutMapping("/buy")
     public void buy(@RequestParam Long id, @RequestParam Long price) {
-        memberService.buyProduct(id, price);
+        memberService.spendMoney(id, price);
     }
 
     @PostMapping("/follow/{userId}")
     public void follow(@PathVariable Long userId, @RequestParam Long whoId) {
-        memberService.followMember(userId, whoId);
+        memberService.following(userId, whoId);
     }
 
     @GetMapping("/list/v1")
     public List<MemberVO> getListV1() {
-        return memberService.findListMemberV1();
+        return memberService.showMemberListV1();
     }
 
     @GetMapping("/list/v2")
     public List<MemberVO2> getListV2() {
-        return memberService.findListMemberV2();
+        return memberService.showMemberListV2();
     }
 }

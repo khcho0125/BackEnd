@@ -26,11 +26,19 @@ public class EntityNode {
 
     private Long weight;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany
     @JoinTable(
             name = "child",
             joinColumns = {@JoinColumn(name = "parent", referencedColumnName = "node_id")},
             inverseJoinColumns = {@JoinColumn(name = "child", referencedColumnName = "node_id")}
     )
     private final Set<EntityNode> child = new LinkedHashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id", foreignKey = @ForeignKey(name = "child_parent_id"))
+    private EntityNode parent;
+
+    public void setParent(EntityNode entityNode) {
+        this.parent = entityNode;
+    }
 }

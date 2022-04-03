@@ -6,11 +6,11 @@ import lombok.Getter;
 @Getter
 public class NodeSub extends Node {
 
-    private final Long id;
-
-    @QueryProjection
-    public NodeSub(Long id, String name, Long weight) {
+    public NodeSub(String name, Long weight) {
         super(name, weight);
-        this.id = id;
+    }
+
+    public NodeSub(EntityNode entityNode) {
+        super(entityNode.getNodeName(), entityNode.getWeight());
     }
 }

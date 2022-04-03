@@ -1,4 +1,4 @@
-package com.query.repository;
+package com.query.repository.jpa;
 
 import com.query.entity.node.EntityNode;
 import org.springframework.data.jpa.repository.JpaRepository;

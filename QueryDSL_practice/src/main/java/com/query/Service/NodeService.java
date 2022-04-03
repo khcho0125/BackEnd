@@ -1,69 +1,35 @@
 package com.query.Service;
 
-import com.query.entity.node.*;
-import com.query.repository.NodeRepository;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.query.entity.node.EntityNode;
+import com.query.entity.node.NodeDto;
+import com.query.entity.node.NodeVO;
+import com.query.repository.NodeMasterRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
 
-import static com.query.entity.node.QEntityNode.entityNode;
-
-@Slf4j
-@Repository
+@Service
 @RequiredArgsConstructor
+@Transactional(rollbackFor = {Exception.class})
 public class NodeService {
 
-    private final JPAQueryFactory jpaQueryFactory;
-    private final NodeRepository nodeRepository;
+    private final NodeMasterRepository repository;
 
-    public EntityNode create(NodeDto nodeDto) {
-        return nodeRepository.save(EntityNode.builder().nodeName(nodeDto.getNodeName()).weight(nodeDto.getWeight()).build());
+    public EntityNode createNode(NodeDto nodeDto) {
+        return repository.create(nodeDto);
     }
 
-    public List<NodeVO> nodeList() {
-        return jpaQueryFactory.query()
-                .select(new QNodeVO(entityNode.id, entityNode.nodeName, entityNode.weight, null))
-                .from(entityNode)
-                .fetch();
+    public NodeVO show(Long id) {
+        return repository.node(id);
     }
 
-    public void connectNode(Long from, Long to) {
-        JPAQuery<Set<EntityNode>> query = jpaQueryFactory.select(entityNode.child)
-                .from(entityNode)
-                .where(entityNode.id.eq(from));
-
-        Set<EntityNode> nodeSet = query.fetchOne();
-
-        jpaQueryFactory.update(entityNode)
-                .where(entityNode.id.eq(from))
-                .set(entityNode.child, Expressions.asSimple(nodeSet).as("child")).execute();
-
+    public void connect(Long parent, Long child) {
+        repository.connectNode(parent, child);
     }
 
-    private EntityNode findNode(Long id) {
-        return jpaQueryFactory.query()
-                .select(entityNode)
-                .from(entityNode)
-                .where(entityNode.id.eq(id))
-                .fetchOne();
-    }
-
-    private com.querydsl.jpa.JPQLQuery<NodeSub> getChild() {
-        return JPAExpressions.select(new QNodeSub(entityNode.id, entityNode.nodeName, entityNode.weight))
-                        .from(entityNode)
-                        .where(entityNode.weight.goe(5L));
-    }
-
-    private List<NodeSub> getChild2() {
-        return jpaQueryFactory.select(new QNodeSub(entityNode.id, entityNode.nodeName, entityNode.weight))
-                .from(entityNode)
-                .where(entityNode.weight.goe(5L)).fetch();
+    public List<NodeVO> showList() {
+        return repository.nodeList();
     }
 }
