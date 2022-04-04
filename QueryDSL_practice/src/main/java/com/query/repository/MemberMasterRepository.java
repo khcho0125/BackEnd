@@ -1,5 +1,6 @@
 package com.query.repository;
 
+import com.query.entity.member.Member;
 import com.query.entity.member.*;
 import com.query.repository.jpa.MemberRepository;
 import com.querydsl.core.dml.UpdateClause;
@@ -7,14 +8,16 @@ import com.querydsl.core.types.Expression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.jpa.impl.JPAUpdateClause;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static com.query.entity.member.QMember.member;
 
-@Service
+@Slf4j
+@Repository
 @RequiredArgsConstructor
 @Transactional(rollbackFor = {Exception.class})
 public class MemberMasterRepository {
@@ -40,9 +43,9 @@ public class MemberMasterRepository {
     public List<Member> findListMember() {
         return jpaQueryFactory
                 .selectFrom(member)
-                .innerJoin(member.following)
+                .leftJoin(member.following)
                 .fetchJoin()
-//                .where(member.money.between(5000, 10000))
+                .where(member.money.between(5000, 10000))
                 .fetch();
     }
 
@@ -78,7 +81,6 @@ public class MemberMasterRepository {
                 .set(member.money, member.money.add(-price));
         updateClause.where(member.id.eq(id))
                 .execute();
-
     }
 
     public void followMember(Long id, Long who) {
@@ -97,7 +99,9 @@ public class MemberMasterRepository {
 
     public List<MemberVO2> findListMemberV2() {
         return jpaQueryFactory.query()
-                .select(new QMemberVO2(member.name, member.email, member.id, member.money, subQuery(member.following)))
+                .select(new QMemberVO2(member.name,
+                        member.email, member.id, member.money,
+                        subQuery(member.following)))
                 .from(member)
                 .fetch();
     }

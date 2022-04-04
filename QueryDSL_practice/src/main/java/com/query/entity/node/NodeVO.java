@@ -1,6 +1,5 @@
 package com.query.entity.node;
 
-import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 import java.util.List;
 
