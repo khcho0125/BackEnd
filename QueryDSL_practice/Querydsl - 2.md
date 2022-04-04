@@ -132,15 +132,9 @@ QMemberVO를 통해 MemberVO 리스트를 만들었다.
 
 아래는 1:N 관계를 가진 Dto List를 사용하는 방법이다.
 
-![image](https://user-images.githubusercontent.com/82090641/161454930-d5ecadc7-637e-4f5e-bdea-2de75f34d976.png)
+![image](https://user-images.githubusercontent.com/82090641/161525009-f641d7a1-2163-44bb-8b96-1c6c087b3780.png)
 
-1. Entity List를 찾아 내부 Set을 List로 변환해준다.
-
-2. distinctByKey와  distinct를 사용한 이유는 List로 객체를 넘겨 받을 때 left Join된 객체의 중복이 일어나기 때문에 중복을 제거해 주었다.
-
-3. distinctByKey 안에 ConcurrentHashMap으로 filtering 해주었다.
-
-   ConcurrentHashMap은 parallel Stream 때문이라 하는데 그냥 Stream이라면 HashMap이나 HashSet을 사용해도 될 것 같다.
+leftJoin된 객체를 받으면 중복 값이 생기기 때문에 distinct로 중복을 제거한 다음 List를 변환해주었다.
 
 - ### JOIN
 
