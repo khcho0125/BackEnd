@@ -214,3 +214,13 @@ QMemberVO를 통해 MemberVO 리스트를 만들었다.
   ##### SELECT를 하는 과정과 복잡한 쿼리를 만드는 작업이 재미있었다.
 
 - ##### N + 1 문제를 해결하는 방법을 터득한 것 같아 흥미로웠다.
+
+#### 참고 자료
+
+https://tecoble.techcourse.co.kr/post/2021-08-08-basic-querydsl/
+
+http://ojc.asia/bbs/board.php?bo_table=LecJpa&wr_id=348
+
+https://devkingdom.tistory.com/245
+
+https://backtony.github.io/jpa/2021-04-02-jpa-querydsl-3/
