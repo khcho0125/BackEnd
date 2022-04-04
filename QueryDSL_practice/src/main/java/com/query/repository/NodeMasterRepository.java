@@ -1,16 +1,16 @@
 package com.query.repository;
 
-import com.query.entity.node.*;
+import com.query.entity.node.EntityNode;
+import com.query.entity.node.NodeDto;
+import com.query.entity.node.NodeSub;
+import com.query.entity.node.NodeVO;
 import com.query.repository.jpa.NodeRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.query.entity.node.QEntityNode.entityNode;
@@ -64,16 +64,12 @@ public class NodeMasterRepository {
                 .selectFrom(entityNode)
                 .leftJoin(entityNode.child)
                 .fetchJoin()
+                .distinct()
                 .fetch();
 
         return parents.stream().map((p) -> new NodeVO(
                 p.getNodeName(), p.getWeight(),
                 p.getChild().stream().map(NodeSub::new).collect(Collectors.toList()))
-        ).filter(distinctByKey(Node::getNodeName)).distinct().collect(Collectors.toList());
-    }
-
-    public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
-        Map<Object, Boolean> map = new ConcurrentHashMap<>();
-        return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+        ).collect(Collectors.toList());
     }
 }
