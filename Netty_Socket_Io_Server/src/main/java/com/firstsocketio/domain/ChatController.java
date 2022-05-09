@@ -19,6 +19,7 @@ public class ChatController {
     public ChatController(SocketIOServer server, MessageRepository messageRepository) {
         namespace = server.addNamespace("/chat");
         namespace.addEventListener("send", ChatMessage.class, onMessage());
+        namespace.addEventListener("userJoin", JoinMessage.class, onJoin());
 
         this.messageRepository = messageRepository;
     }
@@ -36,4 +37,12 @@ public class ChatController {
         };
     }
 
+    private DataListener<JoinMessage> onJoin() {
+        return (client, data, ackSender) -> {
+            log.info("room : {}, user : {}", data.getRoomNum(), data.getUsername());
+            client.joinRoom(data.getRoomNum());
+            Integer online = namespace.getRoomOperations(data.getRoomNum()).getClients().size();
+            namespace.getRoomOperations(data.getRoomNum()).sendEvent("count", online);
+        };
+    }
 }
