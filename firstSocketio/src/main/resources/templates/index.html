@@ -33,7 +33,7 @@
         #messageArea {
             height: 500px;
             width: 100%;
-            overflow: auto;
+            overflow: hidden;
         }
 
         .avatar {
@@ -105,7 +105,7 @@
     <div class="row">
         <div class="col s12">
             <h3>Socket Chat</h3>
-            <h5 id="activeUser" style="color: green"><span id="count"></span> active user</h5>
+            <h5 id="activeUser" style="color: green">0 active user</h5>
             <h5 style="float: right">Welcome <span id="username"></span>!</h5>
         </div>
         <div class="col s12" id="messageArea">
@@ -125,7 +125,7 @@
 </div>
 
 
-<script>
+<script charset="UTF-8">
     var username = getUser();
 
     var typingTimer;
@@ -136,21 +136,21 @@
     $("#messageText").focus();
 
     socket.on("connect", function () {
-        alert("Connected");
-        // $.ajax({
-        //     url: "/api/messages",
-        //     method:"GET",
-        //     success:function (messages) {
-        //         messages.forEach(function(message) {
-        //             console.log(message);
-        //             if (message.user.sessionId === socket.id) {
-        //                 displayMyMessage(message.message);
-        //             } else {
-        //                 displayMessage(message.user.username, message.message);
-        //             }
-        //         });
-        //     }
-        // })
+        // alert("Connected");
+        $.ajax({
+            url: "/messages",
+            method: "GET",
+            success: function (messages) {
+                messages.forEach(function (message) {
+                    console.log(message);
+                    if (message.sessionId === socket.id) {
+                        displayMyMessage(message.message);
+                    } else {
+                        displayMessage(message.username, message.message);
+                    }
+                });
+            }
+        })
     });
 
     socket.on("disconnect", function () {
@@ -170,7 +170,9 @@
 
     // Listen for new message
     socket.on("newMessage", function (message) {
-        displayMessage(message.username, message.message);
+        if (message.sessionId !== socket.id) {
+            displayMessage(message.username, message.message);
+        }
     });
 
     // Listen for new user
@@ -215,18 +217,16 @@
                 });
             }, 1000);
 
-            if (e.keyCode == 13 && $("#messageText").val().trim() != "") {
+            if (e.keyCode === 13 && $("#messageText").val().trim() !== "") {
                 socket.emit("userStopTyping", {
                     "sessionId": socket.id,
                     "username": username
                 });
                 displayMyMessage($("#messageText").val());
-                socket.emit("sendMessage", {
+                socket.emit("send", {
                     "message": $("#messageText").val(),
-                    "user": {
-                        "sessionId": socket.id,
-                        "username": username
-                    }
+                    "sessionId": socket.id,
+                    "username": username
                 });
                 $("#messageText").val("");
 
