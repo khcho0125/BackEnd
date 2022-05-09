@@ -2,12 +2,24 @@ package com.firstsocketio.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 @Getter
-public class ChatMessage {
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class ChatMessage extends BaseEntity {
 
-    private String content;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String username;
-
+    private String sessionId;
+    private String message;
 }
