@@ -127,6 +127,7 @@
 
 <script charset="UTF-8">
     var username = getUser();
+    var roomName = getRoom();
 
     var typingTimer;
 
@@ -138,12 +139,12 @@
     socket.on("connect", function () {
         // alert("Connected");
         $.ajax({
-            url: "/messages",
+            url: "/messages/" + roomName,
             method: "GET",
             success: function (messages) {
-                messages.forEach(function (message) {
+                messages.reverse().forEach(function (message) {
                     console.log(message);
-                    if (message.sessionId === socket.id) {
+                    if (message.username === username.toString()) {
                         displayMyMessage(message.message);
                     } else {
                         displayMessage(message.username, message.message);
@@ -159,7 +160,7 @@
 
     // Tell everyone, new user joined
     socket.emit("userJoin", {
-        "sessionId": socket.id,
+        "roomNum": roomName,
         "username": username
     });
 
@@ -170,9 +171,8 @@
 
     // Listen for new message
     socket.on("newMessage", function (message) {
-        if (message.sessionId !== socket.id) {
+        if (message.username !== username.toString())
             displayMessage(message.username, message.message);
-        }
     });
 
     // Listen for new user
@@ -226,7 +226,8 @@
                 socket.emit("send", {
                     "message": $("#messageText").val(),
                     "sessionId": socket.id,
-                    "username": username
+                    "username": username,
+                    "roomNum": roomName
                 });
                 $("#messageText").val("");
 
@@ -269,7 +270,7 @@
     }
 
     function displayUserTyping(user) {
-        if ($('#' + user.sessionId).length == 0) {
+        if ($('#' + user.sessionId).length === 0) {
             var div = "<div id='" + user.sessionId + "' class='typing col s12'>";
             div += "   <div class='avatar tooltipped' data-position='left' data-tooltip='" + user.username + "'>" + user.username.charAt(0).toLocaleUpperCase() + "</div>";
             div += "   <img src='/img/typing.gif' alt='is typing.' style='margin-left: 10px; height: 50px'>";
@@ -294,10 +295,10 @@
         var ca = decodedCookie.split(';');
         for (var i = 0; i < ca.length; i++) {
             var c = ca[i];
-            while (c.charAt(0) == ' ') {
+            while (c.charAt(0) === ' ') {
                 c = c.substring(1);
             }
-            if (c.indexOf(name) == 0) {
+            if (c.indexOf(name) === 0) {
                 return c.substring(name.length, c.length);
             }
         }
@@ -306,13 +307,24 @@
 
     function getUser() {
         var user = getCookie("username");
-        if (user == "") {
+        if (user === "") {
             user = prompt("What is your name?", "");
-            if (user != "" && user != null) {
+            if (user !== "" && user != null) {
                 setCookie("username", user, 1);
             }
         }
         return user;
+    }
+
+    function getRoom() {
+        var roomNum = getCookie("roomNum");
+        if (roomNum === "") {
+            roomNum = prompt("Do you have Room Number?", "");
+            if (roomNum !== "" && roomNum != null) {
+                setCookie("roomNum", roomNum, 1);
+            }
+        }
+        return roomNum;
     }
 </script>
 </body>
