@@ -1,4 +1,4 @@
-package com.firstsocketio.domain;
+package com.firstsocketio.domain.entity;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
