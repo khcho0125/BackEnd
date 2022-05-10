@@ -1,4 +1,4 @@
-package com.firstsocketio.domain;
+package com.firstsocketio.domain.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,7 +19,7 @@ public class ChatMessage extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String roomNum;
+    private String roomCode;
     private String username;
     private String sessionId;
     private String message;
