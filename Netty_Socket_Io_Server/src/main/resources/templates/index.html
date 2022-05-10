@@ -127,7 +127,7 @@
 
 <script charset="UTF-8">
     var username = getUser();
-    var roomName = getRoom();
+    var roomCode = getRoom();
 
     var typingTimer;
 
@@ -139,7 +139,7 @@
     socket.on("connect", function () {
         // alert("Connected");
         $.ajax({
-            url: "/messages/" + roomName,
+            url: "/messages/" + roomCode,
             method: "GET",
             success: function (messages) {
                 messages.reverse().forEach(function (message) {
@@ -160,8 +160,9 @@
 
     // Tell everyone, new user joined
     socket.emit("userJoin", {
-        "roomNum": roomName,
-        "username": username
+        "roomCode": roomCode,
+        "username": username,
+        "sessionId": socket.id
     });
 
     // Count number of user
@@ -171,8 +172,7 @@
 
     // Listen for new message
     socket.on("newMessage", function (message) {
-        if (message.username !== username.toString())
-            displayMessage(message.username, message.message);
+        displayMessage(message.username, message.message);
     });
 
     // Listen for new user
@@ -207,27 +207,30 @@
         $("#messageText").keyup(function (e) {
             socket.emit("userTyping", {
                 "sessionId": socket.id,
-                "username": username
+                "username": username,
+                "roomCode": roomCode
             });
             clearTimeout(typingTimer);
             typingTimer = setTimeout(function () {
                 socket.emit("userStopTyping", {
                     "sessionId": socket.id,
-                    "username": username
+                    "username": username,
+                    "roomCode": roomCode
                 });
             }, 1000);
 
             if (e.keyCode === 13 && $("#messageText").val().trim() !== "") {
                 socket.emit("userStopTyping", {
                     "sessionId": socket.id,
-                    "username": username
+                    "username": username,
+                    "roomCode": roomCode
                 });
                 displayMyMessage($("#messageText").val());
                 socket.emit("send", {
                     "message": $("#messageText").val(),
                     "sessionId": socket.id,
-                    "username": username,
-                    "roomNum": roomName
+                    "username": username.toString(),
+                    "roomCode": roomCode
                 });
                 $("#messageText").val("");
 
@@ -317,14 +320,14 @@
     }
 
     function getRoom() {
-        var roomNum = getCookie("roomNum");
-        if (roomNum === "") {
-            roomNum = prompt("Do you have Room Number?", "");
-            if (roomNum !== "" && roomNum != null) {
-                setCookie("roomNum", roomNum, 1);
+        var code = getCookie("roomCode");
+        if (code === "") {
+            code = prompt("Do you have Room Code?", "");
+            if (code !== "" && code != null) {
+                setCookie("roomCode", code, 1);
             }
         }
-        return roomNum;
+        return code;
     }
 </script>
 </body>
