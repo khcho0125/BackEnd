@@ -23,6 +23,7 @@ public class ChatController {
         namespace = server.addNamespace("/chat");
         namespace.addEventListener("send", ChatMessage.class, onMessage());
         namespace.addEventListener("userJoin", EventMessage.class, onJoin());
+        namespace.addEventListener("userLeave", EventMessage.class, onLeave());
         namespace.addEventListener("userTyping", EventMessage.class, onTyping());
         namespace.addEventListener("userStopTyping", EventMessage.class, onStopTyping());
 
@@ -62,6 +63,15 @@ public class ChatController {
         return (client, data, ackSender) -> {
             log.info("StopTyping, session: {}", data.getSessionId());
             namespace.getRoomOperations(data.getRoomCode()).sendEvent("userStopTyping", client, data);
+        };
+    }
+
+    private DataListener<EventMessage> onLeave() {
+        return (client, data, ackSender) -> {
+            log.info("room: {}, user: {}", data.getRoomCode(), data.getUsername());
+            client.leaveRoom(data.getRoomCode());
+            Integer online = namespace.getRoomOperations(data.getRoomCode()).getClients().size();
+            namespace.getRoomOperations(data.getRoomCode()).sendEvent("count", online);
         };
     }
 }
