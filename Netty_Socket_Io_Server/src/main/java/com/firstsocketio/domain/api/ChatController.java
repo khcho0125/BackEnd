@@ -61,7 +61,7 @@ public class ChatController {
     private DataListener<EventMessage> onStopTyping() {
         return (client, data, ackSender) -> {
             log.info("StopTyping, session: {}", data.getSessionId());
-            namespace.getBroadcastOperations().sendEvent("userStopTyping", client, data);
+            namespace.getRoomOperations(data.getRoomCode()).sendEvent("userStopTyping", client, data);
         };
     }
 }
