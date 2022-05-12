@@ -29,7 +29,7 @@ public class SocketIoService {
         log.info("Socket Connect User : {}", username);
     };
     private final DisconnectListener disconnectListener = client -> {
-        String username = client.getHandshakeData().getSingleUrlParam("username");
+        String username = client.get("username");
         connectMap.remove(username);
         client.disconnect();
         log.info("Socket DisConnect User : {}", username);
