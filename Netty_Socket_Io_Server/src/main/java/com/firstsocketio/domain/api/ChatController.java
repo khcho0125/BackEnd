@@ -37,7 +37,7 @@ public class ChatController {
 
     private DataListener<ChatMessage> onMessage() {
         return (client, data, ackSender) -> {
-            log.info("message: {}, user: {}, sessionId: {}", data.getMessage(), data.getUsername(), data.getSessionId());
+            log.info("message: {}, user: {}, sessionId: {}", data.getMessage(), client.get("username"), data.getSessionId());
             namespace.getRoomOperations(data.getRoomCode()).sendEvent("newMessage", client, data);
             messageRepository.save(data);
         };
@@ -45,7 +45,7 @@ public class ChatController {
 
     private DataListener<EventMessage> onJoin() {
         return (client, data, ackSender) -> {
-            log.info("room:{}, user: {}, session: {}", data.getRoomCode(), data.getUsername(), data.getSessionId());
+            log.info("room:{}, user: {}, session: {}", data.getRoomCode(), client.get("username"), data.getSessionId());
             client.joinRoom(data.getRoomCode());
             Integer online = namespace.getRoomOperations(data.getRoomCode()).getClients().size();
             namespace.getRoomOperations(data.getRoomCode()).sendEvent("count", online);
@@ -68,7 +68,7 @@ public class ChatController {
 
     private DataListener<EventMessage> onLeave() {
         return (client, data, ackSender) -> {
-            log.info("room: {}, user: {}", data.getRoomCode(), data.getUsername());
+            log.info("room: {}, user: {}", data.getRoomCode(), client.get("username"));
             client.leaveRoom(data.getRoomCode());
             Integer online = namespace.getRoomOperations(data.getRoomCode()).getClients().size();
             namespace.getRoomOperations(data.getRoomCode()).sendEvent("count", online);
