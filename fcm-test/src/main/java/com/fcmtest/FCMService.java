@@ -1,9 +1,7 @@
 package com.fcmtest;
 
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.Notification;
+import com.google.firebase.messaging.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -18,15 +16,19 @@ import static com.fcmtest.FCMInitializer.JSON;
 public class FCMService {
 
     public void sendMessage(String title, String body, String token) {
-        Message message = Message.builder()
-                .setNotification(Notification.builder()
-                        .setTitle(title)
-                        .setBody(body).build())
-                .setToken(token)
-                .build();
+        try {
+            Message message = Message.builder()
+                    .setNotification(Notification.builder()
+                            .setTitle(title)
+                            .setBody(body).build())
+                    .setToken(token)
+                    .build();
 
-        FirebaseMessaging.getInstance().sendAsync(message);
-        log.info("Success Send Message");
+            String response = FirebaseMessaging.getInstance().sendAsync(message).get();
+            log.info("Success Send Message : {}", response);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
     }
 
     public String getAccessToken() {
