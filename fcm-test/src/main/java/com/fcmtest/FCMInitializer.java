@@ -20,7 +20,7 @@ public class FCMInitializer {
     public static final String JSON = "static/fcm-test-2b404-firebase-adminsdk-pfb9o-cbed4064a9.json";
 
     @PostConstruct
-    public void initialize() throws IOException {
+    public void initialize() {
         ClassPathResource resource = new ClassPathResource(JSON);
 
         try (InputStream is = resource.getInputStream()) {
@@ -31,6 +31,8 @@ public class FCMInitializer {
                 FirebaseApp.initializeApp(options);
                 log.info("FirebaseApp initialization complete");
             }
+        } catch (IOException e) {
+            log.error(e.getMessage());
         }
     }
 }
