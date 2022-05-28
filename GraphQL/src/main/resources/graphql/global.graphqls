@@ -1,0 +1,12 @@
+schema {
+    query: Query,
+    mutation: Mutation,
+}
+
+type Query {
+    searchMember(memberSn: ID!): Member,
+}
+
+type Mutation {
+    signup(memberDto: MemberSignup!): Member!
+}
