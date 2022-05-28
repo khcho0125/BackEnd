@@ -1,0 +1,10 @@
+type Member {
+    memberSn: ID!,
+    memberId: String!,
+    password: String!
+}
+
+input MemberSignup {
+    memberId: String!,
+    password: String!
+}
